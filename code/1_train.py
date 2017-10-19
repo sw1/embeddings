@@ -38,6 +38,7 @@ logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=lo
 
 param_row = int(argv[1])
 n_cores = int(argv[2])
+seed = int(argv[3])
 
 params = open('params.csv','r').readlines()[param_row].rstrip().split(',')
 
@@ -49,7 +50,7 @@ samp_freq = float(params[4])
 n_min = int(params[5])
 
 epochs = 5
-seed = 564
+#seed = 564 #original seed
 
 ids_fn =  'gg_' + str(k) + '_ids.pkl'
 kmers_fn_in = 'gg_' + str(k) + '_kmers.csv.gz'

@@ -3,13 +3,13 @@
 #$ -j y
 #$ -cwd
 #$ -M sw424@drexel.edu
-#$ -l h_rt=24:00:00
+#$ -l h_rt=12:00:00
 #$ -P rosenPrj
 #$ -pe shm 1
 #$ -l mem_free=8G
 #$ -l h_vmem=10G
 #$ -q all.q
-#$ -t 1-30
+#$ -t 1-72
 
 . /etc/profile.d/modules.sh
 module load shared
@@ -29,7 +29,7 @@ MODELS=/home/$USERNAME/embedding/models
 py=/mnt/HA/opt/python/3.6.1/bin/python3
 script=2_embed.py
 
-name=query
+name=kegg
 
 mkdir -p $SCRATCH
 

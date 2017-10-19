@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import sys
 from sys import argv
 import os
 import zipfile
@@ -27,11 +28,19 @@ from gensim.models.word2vec import LineSentence
 import embed_functions as emb
 import embed_params as p
 
-fn_row = int(argv[1])
+fn_row = int(argv[1]) - 1
 query_fn = open('fns.dat', 'r').readlines()[fn_row].rstrip()
 kegg_fn = query_fn.replace('query', 'kegg')
-hits_fn = query_fn.replace('query', 'hits').replace('pkl', 'csv.gz')
 
+if not os.path.exists(query_fn):
+    print('Aborting; query kmer file does not exist.')
+    sys.exit(0)
+
+if not os.path.exists(kegg_fn):
+    print('Aborting; kegg kmer file does not exist.')
+    sys.exit(0)
+
+hits_fn = query_fn.replace('query', 'hits').replace('pkl', 'csv.gz')
 sim_dir = os.path.expanduser('~/embedding/cosin')
 
 if not os.path.exists(os.path.join(sim_dir, hits_fn)):

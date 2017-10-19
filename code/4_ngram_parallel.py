@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import sys
 from sys import argv
 import os
 import zipfile
@@ -34,9 +35,12 @@ def get_nn(line,r_ids,r_kmers,r_counts):
     tie_breaker = 0
     
     line = line.decode('utf-8').split()
-    q_kmer = set(line)
+    #q_kmer = set(line)
     q_count = Counter(line)
-        
+    q_kmer = set(q_count.keys())
+    
+    nn = []
+
     for r,r_kmer in enumerate(r_kmers):
 
             i_total = len(q_kmer & r_kmer)
@@ -63,18 +67,23 @@ def get_nn(line,r_ids,r_kmers,r_counts):
     return nn
 
 fn_row = int(argv[1]) - 1
-ref_fn_in = open('fns.dat','r').readlines()[fn_row].rstrip()
-query_fn_in = ref_fn_in.replace('kegg','query')
-k = int(ref_fn_in.split('_')[1])
+nc = int(argv[2])
+nl = int(argv[3])
 
-ngram_fn = ref_fn_in.replace('kegg','ngrams').replace('.csv.gz','.pkl')
-ngram_dir = os.path.expanduser('~/embedding/ngrams')
+k = ['6','10','15'][fn_row]
+
+ref_fn_in = 'kegg_' + k + '_kmers.csv.gz'
+query_fn_in = 'query_' + k + '_kmers.csv.gz'
+hits_fn = 'ngrams' + k + '_kmers.csv.gz'
+
+ngram_fn = 'ngrams' + k + '_kmers.pkl'
+ngram_dir = os.path.expanduser('~/embedding/ngrams3')
 
 ref_fn = 'tmp' + str(fn_row) + '_' + ref_fn_in
 query_fn = 'tmp' + str(fn_row) + '_' + query_fn_in
 
-r_ids_fn = 'kegg_' + str(k) + '_ids' + '.pkl'
-q_ids_fn = 'query_' + str(k) + '_ids' + '.pkl'
+r_ids_fn = 'kegg_' + k + '_ids' + '.pkl'
+q_ids_fn = 'query_' + k + '_ids' + '.pkl'
 
 if not os.path.exists(os.path.join(ngram_dir,ngram_fn)):
 
@@ -114,18 +123,21 @@ if not os.path.exists(os.path.join(ngram_dir,ngram_fn)):
 
     if __name__ == '__main__':
 
-        n_lines = 10
-        n_cores = 24
+        sys.stdout = open('ngram_log_' + str(fn_row) + '.txt','w')
+
+        print('Preparing nodes.')
+
+        n_lines = nl
+        n_cores = nc
 
         nns = {}
         q_ids_iter = iter(q_ids)
 
+        pool = mp.Pool(processes=n_cores)
+        
         b = 0
         while True:
-
-            if b == 5:
-                break
-
+            
             batch_lines = list(islice(q_file, n_lines * n_cores))
             batch_ids = list(islice(q_ids_iter, n_lines * n_cores))
 
@@ -134,20 +146,34 @@ if not os.path.exists(os.path.join(ngram_dir,ngram_fn)):
             else:
                 batch = list(zip(batch_ids,batch_lines))
 
-            pool = mp.Pool(processes=n_cores)
-
             tmp = pool.map(worker,(batch[line:line + n_lines] for line in range(0,len(batch),n_lines)))
 
             for d in tmp:
                 nns.update(d)
-        
+
+
+            if (b + 1) % 10 == 0:
+                print('Running batch ' + str(b + 1) + '.')
+                sys.stdout.flush()
+
+            if (b + 1) % 100 == 0:
+                print('Writing temp. output.')
+                six.moves.cPickle.dump(nns,open('tmp_nns_' + str(fn_row) + '.pkl','wb'))
+            
             b += 1
 
-    print(nns)
+        pool.close()
+        sys.stdout.close()
 
-    #print('Saving ngrams.')
-    #six.moves.cPickle.dump({'nns':nns},
-    #        open(os.path.join(ngram_dir,ngram_fn),'wb'),protocol=4)
+    print('Complete.')
+
+    z = [(q,r[0]) for q,r in nns.items()]
+    df = pd.DataFrame(list(z), columns=['query','organism:16s'])
+    df.to_csv(os.path.join(ngram_dir, hits_fn), compression='gzip', index=False)
+
+    print('Saving ngrams.')
+    six.moves.cPickle.dump({'nns':nns},
+            open(os.path.join(ngram_dir,ngram_fn),'wb'),protocol=4)
 
 else:
 

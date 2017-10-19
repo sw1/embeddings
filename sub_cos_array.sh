@@ -9,7 +9,7 @@
 #$ -l mem_free=8G
 #$ -l h_vmem=10G
 #$ -q all.q
-#$ -t 1-30
+#$ -t 1-42
 
 . /etc/profile.d/modules.sh
 module load shared
@@ -30,14 +30,12 @@ EMBEDS=/home/$USERNAME/embedding/embeddings
 py=/mnt/HA/opt/python/3.6.1/bin/python3
 script=3_cosim.py
 
-name=query
+#mkdir -p $SCRATCH
 
-mkdir -p $SCRATCH
+#cp $CODE/embed_params.py $CODE/embed_functions.py $CODE/$script $SCRATCH
+#cp $EMBEDS/* $SCRATCH
 
-cp $CODE/embed_params.py $CODE/embed_functions.py $CODE/$script $SCRATCH
-cp $EMBEDS/* $SCRATCH
-
-ls $EMBEDS -1 | grep query > $SCRATCH/fns.dat
+#ls $EMBEDS -1 | grep query > $SCRATCH/fns.dat
 
 cd $SCRATCH
 

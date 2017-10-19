@@ -39,7 +39,8 @@ cd $SCRATCH
 $py embed_params.py
 
 n_cores=1
+seed=98
 
-$py $script $SGE_TASK_ID $n_cores
+$py $script $SGE_TASK_ID $n_cores $seed
 
 exit 0
