@@ -43,8 +43,10 @@ if name == 'gg':
   reads_fn = 'gg_13_5.fasta.gz'
 if name == 'kegg':
   reads_fn = 'reference_seqs.fna.gz'
-if name == 'query':
+if name == 'query': # query_hmp
   reads_fn = 'seqs.fna.gz'
+if name == 'query_oral':
+  reads_fn = 'seqs_oral.fna.gz'
 
 ids_fn = name + '_' + str(k) + '_ids.pkl'
 kmers_fn = name + '_' + str(k) + '_kmers.csv.gz'

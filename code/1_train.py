@@ -2,35 +2,13 @@
 
 from sys import argv, stdout
 import os
-import time
-import zipfile
 from os.path import splitext, isfile
-import gzip
-import csv
-import six.moves.cPickle
-import collections
-from smart_open import smart_open
 from shutil import copyfile
-
-import matplotlib.pyplot as plt
-from matplotlib.pyplot import cm
-
-import numpy as np
-import pandas as pd
-from itertools import product, islice
-from operator import itemgetter
-from sklearn.manifold import TSNE
-import random
-import math
-import multiprocessing as mp
 
 import logging
 import gensim
 from gensim.models import Word2Vec
 from gensim.models.word2vec import LineSentence
-
-import embed_functions as emb
-import embed_params as p
 
 assert gensim.models.doc2vec.FAST_VERSION > -1
 

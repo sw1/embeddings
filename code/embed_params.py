@@ -3,7 +3,7 @@
 from itertools import product
 from csv import writer
 
-k = [6,10,15] #[6,8,10,12,15,20]
+k = [12] #[6,8,10,12,15,20]
 d = [64,128,256]
 w = [20,50] #[10,20,50]
 neg_samps = [10,20] #[5,10,20]

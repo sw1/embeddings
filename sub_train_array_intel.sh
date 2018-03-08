@@ -6,10 +6,10 @@
 #$ -l h_rt=48:00:00
 #$ -P rosenPrj
 #$ -pe shm 1
-#$ -l mem_free=12G
+#$ -l mem_free=14G
 #$ -l h_vmem=16G
 #$ -q all.q@@intelhosts
-#$ -t 1-72
+#$ -t 1-24
 
 . /etc/profile.d/modules.sh
 module load shared
@@ -29,18 +29,18 @@ MODELS=/home/$USERNAME/embedding/models
 py=/mnt/HA/opt/python/intel/2018/intelpython3/bin/python3
 script=1_train.py
 
+seed=423 #98
+k=12
+
 mkdir -p $SCRATCH
 
-cp $KMERS/gg*csv.gz $SCRATCH/
+cp $KMERS/gg_${k}*csv.gz $SCRATCH/
 cp $CODE/embed_params.py $CODE/embed_functions.py $CODE/$script $SCRATCH
 
 cd $SCRATCH
 
 $py embed_params.py
 
-n_cores=1
-seed=98
-
-$py $script $SGE_TASK_ID $n_cores $seed
+$py $script $SGE_TASK_ID $NSLOTS $seed
 
 exit 0
